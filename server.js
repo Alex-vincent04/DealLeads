@@ -45,9 +45,13 @@ const Deal = mongoose.model('Deal', dealSchema);
 
 
 // Email Service Configuration (Resend API)
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-console.log('--- EMAIL CONFIG: Resend client initialized ---');
+if (resend) {
+    console.log('--- EMAIL CONFIG: Resend client initialized ---');
+} else {
+    console.warn('--- EMAIL CONFIG: RESEND_API_KEY is missing. Broadcasting will not work until you add it to Render! ---');
+}
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -134,6 +138,10 @@ app.post('/api/broadcast', async (req, res) => {
 
         if (subscribers.length === 0) {
             return res.status(400).json({ error: 'No subscribers to broadcast to' });
+        }
+
+        if (!resend) {
+            return res.status(500).json({ error: 'Email service (Resend) is not configured. Please add RESEND_API_KEY to your environment variables.' });
         }
 
         console.log(`--- STARTING BROADCAST: ${title} ---`);

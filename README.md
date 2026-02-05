@@ -28,10 +28,7 @@ In your Render dashboard (Environment tab), set the following:
 
 - `ADMIN_KEY`: Your secret key for admin access (e.g., `dealLeads2026`)
 - `MONGODB_URI`: Your MongoDB Atlas connection string
-- `EMAIL_USER`: Your Gmail address
-- `EMAIL_PASS`: Your Gmail App Password
-- `SMTP_HOST`: `smtp.gmail.com`
-- `SMTP_PORT`: `587`
+- `RESEND_API_KEY`: Your Resend API key (e.g., `re_abc123...`)
 
 ### Deployment Steps:
 1. Push this code to a GitHub repository.
