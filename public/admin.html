@@ -355,14 +355,22 @@
             }
         }
 
-        function attemptLogin() {
-            const key = document.getElementById('gateKey').value;
+        async function attemptLogin() {
+            const key = document.getElementById('gateKey').value.trim();
             if (!key) return alert('Please enter a key');
 
-            // Verify the key with a simple API call (fetching deals is public, but testing the key on subscribers is best)
-            // For now, we'll trust the session and let the API reject requests if the key is wrong
-            sessionStorage.setItem('adminKey', key);
-            checkAuth();
+            const res = await fetch('/api/subscribers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ auth: key })
+            });
+
+            if (res.ok) {
+                sessionStorage.setItem('adminKey', key);
+                checkAuth();
+            } else {
+                alert('Invalid security key. Please check your Render dashboard.');
+            }
         }
 
         function logout() {
@@ -408,7 +416,7 @@
 
         dealForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const auth = document.getElementById('adminPass').value;
+            const auth = document.getElementById('adminPass').value.trim();
             const dealData = {
                 title: document.getElementById('title').value,
                 sector: document.getElementById('sector').value,
@@ -473,7 +481,7 @@
                 const res = await fetch('/api/subscribers', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ auth })
+                    body: JSON.stringify({ auth: auth.trim() })
                 });
 
                 if (res.ok) {

@@ -262,16 +262,32 @@
             const key = sessionStorage.getItem('adminKey');
             if (key) {
                 document.getElementById('loginGate').style.display = 'none';
-                document.getElementById('adminContent').style.display = 'flex';
+                document.getElementById('adminContent').style.display = 'block';
                 if (document.getElementById('adminPass')) document.getElementById('adminPass').value = key;
             }
         }
 
-        function attemptLogin() {
-            const key = document.getElementById('gateKey').value;
+        async function attemptLogin() {
+            const key = document.getElementById('gateKey').value.trim();
             if (!key) return alert('Please enter a key');
-            sessionStorage.setItem('adminKey', key);
-            checkAuth();
+
+            // Verify with server immediately
+            try {
+                const res = await fetch('/api/subscribers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ auth: key })
+                });
+
+                if (res.ok) {
+                    sessionStorage.setItem('adminKey', key);
+                    checkAuth();
+                } else {
+                    alert('Invalid security key. Please check your Render dashboard.');
+                }
+            } catch (err) {
+                alert('Connection error. Is the server running?');
+            }
         }
 
         function logout() {
@@ -297,7 +313,7 @@
             const payload = {
                 title: document.getElementById('dealTitle').value,
                 summary: document.getElementById('dealDetails').value,
-                auth: document.getElementById('adminPass').value
+                auth: document.getElementById('adminPass').value.trim()
             };
 
             try {
@@ -310,7 +326,7 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    status.innerText = "✓ Success! Deal update sent to your subscribers.";
+                    status.innerText = `✓ ${result.message}`;
                     status.className = 'success';
                     form.reset();
                 } else {

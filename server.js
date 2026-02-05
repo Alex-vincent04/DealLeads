@@ -169,10 +169,27 @@ app.post('/api/broadcast', async (req, res) => {
         const successCount = results.filter(r => r.status === 'fulfilled').length;
         const failCount = results.length - successCount;
 
-        console.log(`Broadcast finished. Success: ${successCount}, Failed: ${failCount}`);
+        // Log specific errors for each failure
+        results.forEach((r, i) => {
+            if (r.status === 'rejected') {
+                console.error(`--- BROADCAST FAIL [${subscribers[i].email}]:`, r.reason.message || r.reason);
+            } else {
+                console.log(`--- BROADCAST SUCCESS [${subscribers[i].email}] ---`);
+            }
+        });
+
+        console.log(`Broadcast finished. Total: ${results.length}, Success: ${successCount}, Failed: ${failCount}`);
+
+        if (successCount === 0 && results.length > 0) {
+            return res.status(500).json({
+                error: 'All emails failed to send. Check server logs for SMTP errors.',
+                failed: failCount
+            });
+        }
 
         res.status(200).json({
-            message: `Broadcast complete. Sent ${successCount} emails.`,
+            message: `Broadcast complete. Sent ${successCount} emails successfully.`,
+            successCount,
             failed: failCount
         });
     } catch (err) {
