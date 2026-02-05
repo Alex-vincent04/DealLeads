@@ -4,14 +4,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const mongoose = require('mongoose');
-const dns = require('dns');
-
-// Force IPv4 for all network calls to bypass Render's IPv6 routing issues
-if (dns.setDefaultResultOrder) {
-    dns.setDefaultResultOrder('ipv4first');
-}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,24 +44,10 @@ const Subscriber = mongoose.model('Subscriber', subscriberSchema);
 const Deal = mongoose.model('Deal', dealSchema);
 
 
-// Email Transporter Configuration
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '') : ''
-    },
-    // Use true for 465, false for other ports. Since we are using 465, secure must be true.
-    connectionTimeout: 30000,
-    greetingTimeout: 15000,
-    socketTimeout: 30000,
-    // CRITICAL: Aggressively force IPv4 to avoid ENETUNREACH on Render/Cloud
-    family: 4
-});
+// Email Service Configuration (Resend API)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-console.log('--- EMAIL CONFIG: Transporter initialized with family: 4, port: 465 ---');
+console.log('--- EMAIL CONFIG: Resend client initialized ---');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -158,13 +138,14 @@ app.post('/api/broadcast', async (req, res) => {
 
         console.log(`--- STARTING BROADCAST: ${title} ---`);
 
-        // Send emails to all subscribers
+        console.log(`--- BROADCAST: Sending ${subscribers.length} emails via Resend ---`);
+
+        // Prepare batch sending
         const emailPromises = subscribers.map(sub => {
-            const mailOptions = {
-                from: `"DealLeads Portal" <${process.env.EMAIL_USER}>`,
+            return resend.emails.send({
+                from: 'DealLeads Portal <onboarding@resend.dev>', // Note: Use verified domain if you have one
                 to: sub.email,
                 subject: `New Opportunity: ${title}`,
-                text: summary,
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
                         <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">${title}</h2>
@@ -175,8 +156,7 @@ app.post('/api/broadcast', async (req, res) => {
                         </div>
                     </div>
                 `
-            };
-            return transporter.sendMail(mailOptions);
+            });
         });
 
         const results = await Promise.allSettled(emailPromises);
@@ -185,17 +165,20 @@ app.post('/api/broadcast', async (req, res) => {
 
         // Log specific errors for each failure
         results.forEach((r, i) => {
-            if (r.status === 'rejected') {
-                console.error(`--- BROADCAST FAIL [${subscribers[i].email}]:`, r.reason.message || r.reason);
+            if (r.status === 'rejected' || (r.value && r.value.error)) {
+                const error = r.status === 'rejected' ? r.reason : r.value.error;
+                console.error(`--- BROADCAST FAIL [${subscribers[i].email}]:`, error.message || error);
             } else {
-                console.log(`--- BROADCAST SUCCESS [${subscribers[i].email}] ---`);
+                console.log(`--- BROADCAST SUCCESS [${subscribers[i].email}] ID: ${r.value.data.id} ---`);
             }
         });
 
         console.log(`Broadcast finished. Total: ${results.length}, Success: ${successCount}, Failed: ${failCount}`);
 
         if (successCount === 0 && results.length > 0) {
-            const firstError = results.find(r => r.status === 'rejected')?.reason?.message || 'Unknown SMTP Error';
+            const firstError = results.find(r => r.status === 'rejected')?.reason?.message ||
+                results.find(r => r.value?.error)?.value?.error?.message ||
+                'Unknown Resend Error';
             return res.status(500).json({
                 error: `All emails failed to send. Reason: ${firstError}`,
                 failed: failCount
