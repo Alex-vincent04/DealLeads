@@ -46,19 +46,12 @@ const Deal = mongoose.model('Deal', dealSchema);
 
 // Email Transporter Configuration
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT) || 465,
-    secure: (parseInt(process.env.SMTP_PORT) === 465 || !process.env.SMTP_PORT),
+    service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '') : ''
     },
-    connectionTimeout: 15000, // Increased to 15s
-    greetingTimeout: 10000,
-    socketTimeout: 20000,
-    // CRITICAL: Force IPv4 to avoid ENETUNREACH on Render/Cloud environments
-    dnsTimeout: 5000,
-    family: 4
+    connectionTimeout: 15000
 });
 
 app.use(cors());
