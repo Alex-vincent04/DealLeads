@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | DealLeads</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b00;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --secondary: #64748b;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-btns {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            color: var(--secondary);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .deal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .deal-item {
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-info h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .item-info p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            color: var(--secondary);
+        }
+
+        .subscriber-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .subscriber-table th,
+        .subscriber-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .subscriber-table th {
+            color: var(--secondary);
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .full-row {
+            grid-column: 1 / -1;
+        }
+
+        #statusMsg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        /* Login Gate Styles */
+        #loginGate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #adminContent {
+            display: none;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--secondary);
+            border: 1px solid #e2ebf0;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Login Gate Overlay -->
+    <div id="loginGate">
+        <div class="login-card">
+            <a href="index.html" class="logo">Deal<span>Leads</span></a>
+            <h2 style="margin-top: 25px;">Admin Login</h2>
+            <p style="color: var(--secondary); font-size: 14px; margin-bottom: 25px;">Enter your Security Key to access
+                the dashboard.</p>
+            <div class="form-group" style="text-align: left;">
+                <label>Security Key</label>
+                <input type="password" id="gateKey" placeholder="Enter Key">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; padding: 14px;" onclick="attemptLogin()">Unlock
+                Dashboard</button>
+            <a href="index.html"
+                style="display: block; margin-top: 20px; color: var(--secondary); text-decoration: none; font-size: 14px;">Back
+                to Homepage</a>
+        </div>
+    </div>
+
+    <!-- Main Admin Content -->
+    <div class="container" id="adminContent">
+        <header>
+            <a href="index.html" class="logo">Deal<span>Leads</span></a>
+            <div class="nav-btns">
+                <button class="logout-btn" onclick="logout()">Logout</button>
+                <a href="admin-access-broadcast.html" class="btn btn-outline">Broadcast Update</a>
+                <a href="index.html" class="btn btn-outline">View Site</a>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Add Deal Form -->
+            <div class="card">
+                <h2>Add New Deal</h2>
+                <form id="dealForm">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="title" required placeholder="e.g. Solar Power Plant">
+                    </div>
+                    <div class="form-group">
+                        <label>Sectors (separate with commas)</label>
+                        <input type="text" id="sector" required placeholder="e.g. Manufacturing, Solar, BFSI">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="location" required placeholder="e.g. Gujarat, India">
+                    </div>
+                    <div class="form-group">
+                        <label>Deal Type</label>
+                        <select id="type">
+                            <option value="Asset Acquisition">Asset Acquisition</option>
+                            <option value="Joint Venture">Joint Venture</option>
+                            <option value="Equity Investment">Equity Investment</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="text" id="status" value="Performing Asset">
+                    </div>
+                    <div class="form-group">
+                        <label>Security Key</label>
+                        <input type="password" id="adminPass" required placeholder="Admin Secret">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Deal</button>
+                </form>
+            </div>
+
+            <!-- Deal Management -->
+            <div class="card">
+                <h2>Manage Deals</h2>
+                <div id="dealList" class="deal-list">
+                    <!-- Deals will be loaded here -->
+                    <p style="color: var(--secondary);">Loading deals...</p>
+                </div>
+            </div>
+
+            <!-- Subscriber Management -->
+            <div class="card full-row">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px;">
+                    <h2 style="margin: 0;">Subscriber List</h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="password" id="subscriberKey" placeholder="Subscriber Security Key"
+                            style="width: 200px; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <button class="btn btn-outline" onclick="loadSubscribers()">Refresh List</button>
+                    </div>
+                </div>
+                <div id="subscriberContainer" class="list-container">
+                    <p style="color: var(--secondary);">Enter security key in deal form to authorize viewing
+                        subscribers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="statusMsg"></div>
+
+    <script>
+        // Authentication Logic
+        function checkAuth() {
+            const key = sessionStorage.getItem('adminKey');
+            if (key) {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                // Auto-fill all key fields
+                if (document.getElementById('adminPass')) document.getElementById('adminPass').value = key;
+                if (document.getElementById('subscriberKey')) document.getElementById('subscriberKey').value = key;
+                loadDeals();
+            }
+        }
+
+        function attemptLogin() {
+            const key = document.getElementById('gateKey').value;
+            if (!key) return alert('Please enter a key');
+
+            // Verify the key with a simple API call (fetching deals is public, but testing the key on subscribers is best)
+            // For now, we'll trust the session and let the API reject requests if the key is wrong
+            sessionStorage.setItem('adminKey', key);
+            checkAuth();
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminKey');
+            window.location.reload();
+        }
+
+        // Initialize
+        checkAuth();
+
+        const dealForm = document.getElementById('dealForm');
+        const dealList = document.getElementById('dealList');
+        const statusMsg = document.getElementById('statusMsg');
+
+        function showStatus(msg, type = 'success') {
+            statusMsg.innerText = msg;
+            statusMsg.style.background = type === 'success' ? 'var(--success)' : 'var(--danger)';
+            statusMsg.style.display = 'block';
+            setTimeout(() => statusMsg.style.display = 'none', 3000);
+        }
+
+        async function loadDeals() {
+            try {
+                const res = await fetch('/api/deals');
+                const deals = await res.json();
+                dealList.innerHTML = deals.length ? '' : '<p>No deals found.</p>';
+                deals.forEach(deal => {
+                    const div = document.createElement('div');
+                    div.className = 'deal-item';
+                    div.innerHTML = `
+                        <div class="item-info">
+                            <h4>${deal.title}</h4>
+                            <p>${deal.sector} | ${deal.location}</p>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteDeal('${deal.id}')">Delete</button>
+                    `;
+                    dealList.appendChild(div);
+                });
+            } catch (err) {
+                dealList.innerHTML = '<p>Error loading deals.</p>';
+            }
+        }
+
+        dealForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const auth = document.getElementById('adminPass').value;
+            const dealData = {
+                title: document.getElementById('title').value,
+                sector: document.getElementById('sector').value,
+                location: document.getElementById('location').value,
+                type: document.getElementById('type').value,
+                status: document.getElementById('status').value
+            };
+
+            try {
+                const res = await fetch('/api/deals', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deal: dealData, auth })
+                });
+
+                if (res.ok) {
+                    showStatus('Deal created successfully!');
+                    dealForm.reset();
+                    loadDeals();
+                } else {
+                    const data = await res.json();
+                    showStatus(data.error || 'Failed to create deal', 'danger');
+                }
+            } catch (err) {
+                showStatus('Connection error', 'danger');
+            }
+        });
+
+        async function deleteDeal(id) {
+            const auth = prompt('Enter Security Key to confirm deletion:');
+            if (!auth) return;
+
+            try {
+                const res = await fetch(`/api/deals/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ auth })
+                });
+
+                if (res.ok) {
+                    showStatus('Deal deleted');
+                    loadDeals();
+                } else {
+                    showStatus('Action unauthorized', 'danger');
+                }
+            } catch (err) {
+                showStatus('Error deleting deal', 'danger');
+            }
+        }
+
+        async function loadSubscribers() {
+            const auth = document.getElementById('subscriberKey').value;
+            if (!auth) {
+                alert('Please enter your Security Key in the Subscriber List section to view subscribers.');
+                return;
+            }
+
+            const container = document.getElementById('subscriberContainer');
+            container.innerHTML = '<p>Fetching subscribers...</p>';
+
+            try {
+                const res = await fetch('/api/subscribers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ auth })
+                });
+
+                if (res.ok) {
+                    const subs = await res.json();
+                    if (subs.length === 0) {
+                        container.innerHTML = '<p>No subscribers yet.</p>';
+                        return;
+                    }
+
+                    let html = `
+                        <table class="subscriber-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Industry</th>
+                                    <th>Occupation</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    subs.forEach(s => {
+                        html += `
+                            <tr>
+                                <td><strong>${s.name}</strong></td>
+                                <td>${s.email}</td>
+                                <td>${s.industry}</td>
+                                <td>${s.occupation}</td>
+                                <td>${new Date(s.date).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;" onclick="deleteSubscriber('${s.email}')">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    html += '</tbody></table>';
+                    container.innerHTML = html;
+                } else {
+                    const data = await res.json();
+                    container.innerHTML = `<p style="color: var(--danger);">${data.error || 'Failed to fetch subscribers'}</p>`;
+                }
+            } catch (err) {
+                container.innerHTML = '<p style="color: var(--danger);">Connection error</p>';
+            }
+        }
+
+        async function deleteSubscriber(email) {
+            const auth = document.getElementById('subscriberKey').value;
+            if (!auth) {
+                alert('Please enter your Security Key in the Subscriber List section to authorize deletion.');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete ${email}?`)) return;
+
+            try {
+                const res = await fetch(`/api/subscribers/${email}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ auth })
+                });
+
+                if (res.ok) {
+                    showStatus('Subscriber deleted');
+                    loadSubscribers();
+                } else {
+                    const data = await res.json();
+                    showStatus(data.error || 'Failed to delete subscriber', 'danger');
+                }
+            } catch (err) {
+                showStatus('Error deleting subscriber', 'danger');
+            }
+        }
+
+        // loadDeals is called in checkAuth
+    </script>
+</body>
+
+</html>

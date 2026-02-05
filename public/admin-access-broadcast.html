@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Broadcast | DealLeads</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b00;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --secondary: #64748b;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .admin-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        p {
+            color: var(--secondary);
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-family: inherit;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+        }
+
+        .btn-broadcast {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-broadcast:hover {
+            background: #e66000;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.2);
+        }
+
+        .btn-broadcast:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: var(--dark);
+        }
+
+        #statusMessage {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            display: block !important;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            display: block !important;
+        }
+
+        /* Login Gate Styles */
+        #loginGate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #adminContent {
+            display: none;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: var(--secondary);
+            border: 1px solid #e2ebf0;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Login Gate Overlay -->
+    <div id="loginGate">
+        <div class="login-card">
+            <a href="index.html" class="logo"
+                style="text-decoration: none; font-size: 24px; font-weight: 700; color: var(--dark);">Deal<span
+                    style="color: var(--primary);">Leads</span></a>
+            <h2 style="margin-top: 25px;">Broadcast Login</h2>
+            <p style="color: var(--secondary); font-size: 14px; margin-bottom: 25px;">Enter your Security Key to access
+                the broadcaster.</p>
+            <div class="form-group" style="text-align: left;">
+                <label>Security Key</label>
+                <input type="password" id="gateKey" placeholder="Enter Key">
+            </div>
+            <button class="btn-broadcast" style="width: 100%; padding: 14px;" onclick="attemptLogin()">Unlock
+                Broadcaster</button>
+            <a href="index.html"
+                style="display: block; margin-top: 20px; color: var(--secondary); text-decoration: none; font-size: 14px;">Back
+                to Homepage</a>
+        </div>
+    </div>
+
+    <!-- Main Admin Content -->
+    <div class="admin-card" id="adminContent">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+        <a href="index.html" class="logo"
+            style="text-decoration: none; font-size: 24px; font-weight: 700; color: var(--dark);">Deal<span
+                style="color: var(--primary);">Leads</span></a>
+        <h2 style="margin-top: 20px;">Broadcast Deal Update</h2>
+        <p>This will send an email notification to all verified subscribers on your list.</p>
+
+        <form id="broadcastForm">
+            <div class="form-group">
+                <label for="dealTitle">Deal Title / Update</label>
+                <input type="text" id="dealTitle" required placeholder="e.g. New Manufacturing Plant in Pune">
+            </div>
+
+            <div class="form-group">
+                <label for="dealDetails">Short Summary</label>
+                <textarea id="dealDetails" rows="3" placeholder="A quick snippet about the deal..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="adminPass">Security Key</label>
+                <input type="password" id="adminPass" required placeholder="Enter your private key">
+            </div>
+
+            <button type="submit" class="btn-broadcast" id="submitBtn">
+                <span>Send to All Subscribers</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+
+            <div id="statusMessage"></div>
+        </form>
+
+        <a href="admin.html" class="back-link" style="margin-bottom: 5px; color: var(--primary); font-weight: 600;">Back
+            to Admin Dashboard</a>
+        <a href="index.html" class="back-link">Return to Site Homepage</a>
+    </div>
+
+    <script>
+        // Authentication Logic
+        function checkAuth() {
+            const key = sessionStorage.getItem('adminKey');
+            if (key) {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'flex';
+                if (document.getElementById('adminPass')) document.getElementById('adminPass').value = key;
+            }
+        }
+
+        function attemptLogin() {
+            const key = document.getElementById('gateKey').value;
+            if (!key) return alert('Please enter a key');
+            sessionStorage.setItem('adminKey', key);
+            checkAuth();
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminKey');
+            window.location.reload();
+        }
+
+        // Initialize
+        checkAuth();
+
+        const form = document.getElementById('broadcastForm');
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('statusMessage');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            btn.disabled = true;
+            btn.querySelector('span').innerText = 'Broadcasting...';
+            status.className = '';
+            status.innerText = '';
+
+            const payload = {
+                title: document.getElementById('dealTitle').value,
+                summary: document.getElementById('dealDetails').value,
+                auth: document.getElementById('adminPass').value
+            };
+
+            try {
+                const response = await fetch('/api/broadcast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    status.innerText = "✓ Success! Deal update sent to your subscribers.";
+                    status.className = 'success';
+                    form.reset();
+                } else {
+                    status.innerText = "⨯ Error: " + (result.error || "Failed to send broadcast.");
+                    status.className = 'error';
+                }
+            } catch (err) {
+                status.innerText = "⨯ Connection error. Check server logs.";
+                status.className = 'error';
+            } finally {
+                btn.disabled = false;
+                btn.querySelector('span').innerText = 'Send to All Subscribers';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: dealleads-portal
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: DATA_DIR
+        value: /data
+      - key: ADMIN_KEY
+        generateValue: true
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+    disk:
+      name: dealleads-data
+      mountPath: /data
+      sizeGB: 1
