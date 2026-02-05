@@ -6,6 +6,12 @@ const path = require('path');
 
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Force IPv4 for all network calls to bypass Render's IPv6 routing issues
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -60,6 +66,8 @@ const transporter = nodemailer.createTransport({
     // CRITICAL: Aggressively force IPv4 to avoid ENETUNREACH on Render/Cloud
     family: 4
 });
+
+console.log('--- EMAIL CONFIG: Transporter initialized with family: 4, port: 465 ---');
 
 app.use(cors());
 app.use(bodyParser.json());
