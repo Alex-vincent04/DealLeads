@@ -2,17 +2,47 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const fs = require('fs');
 const path = require('path');
 
 const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DATA_DIR = process.env.DATA_DIR || __dirname;
-const DATA_FILE = path.join(DATA_DIR, 'subscribers.json');
-const DEALS_FILE = path.join(DATA_DIR, 'deals.json');
 const ADMIN_KEY = process.env.ADMIN_KEY || 'dealLeads2026';
+const MONGODB_URI = process.env.MONGODB_URI;
+
+// MongoDB Connection
+if (MONGODB_URI) {
+    mongoose.connect(MONGODB_URI)
+        .then(() => console.log('Connected to MongoDB Atlas'))
+        .catch(err => console.error('MongoDB connection error:', err));
+} else {
+    console.warn('MONGODB_URI not provided. Server may not function correctly.');
+}
+
+// Define Schemas
+const subscriberSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    occupation: String,
+    email: { type: String, required: true, unique: true },
+    industry: String,
+    preferences: String,
+    date: { type: Date, default: Date.now }
+});
+
+const dealSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    sector: { type: String, required: true },
+    location: String,
+    type: String,
+    status: String,
+    dateAdded: { type: Date, default: Date.now }
+});
+
+const Subscriber = mongoose.model('Subscriber', subscriberSchema);
+const Deal = mongoose.model('Deal', dealSchema);
+
 
 // Email Transporter Configuration
 const transporter = nodemailer.createTransport({
@@ -29,16 +59,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Initialize files if they don't exist
-if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify([]));
-}
-if (!fs.existsSync(DEALS_FILE)) {
-    fs.writeFileSync(DEALS_FILE, JSON.stringify([]));
-}
 
-// Endpoint to handle subscriptions
-app.post('/api/subscribe', (req, res) => {
+
+app.post('/api/subscribe', async (req, res) => {
     try {
         const { name, occupation, email, industry, preferences } = req.body;
 
@@ -46,24 +69,21 @@ app.post('/api/subscribe', (req, res) => {
             return res.status(400).json({ error: 'Name and Email are required' });
         }
 
-        const subscribers = JSON.parse(fs.readFileSync(DATA_FILE));
-
-        // Prevent duplicate emails
-        if (subscribers.find(s => s.email === email)) {
+        // Check for duplicate
+        const existing = await Subscriber.findOne({ email });
+        if (existing) {
             return res.status(400).json({ error: 'Email already subscribed' });
         }
 
-        const newSubscriber = {
+        const newSubscriber = new Subscriber({
             name,
             occupation,
             email,
             industry,
-            preferences,
-            date: new Date().toISOString()
-        };
+            preferences
+        });
 
-        subscribers.push(newSubscriber);
-        fs.writeFileSync(DATA_FILE, JSON.stringify(subscribers, null, 2));
+        await newSubscriber.save();
 
         console.log(`New subscriber: ${email}`);
         res.status(200).json({ message: 'Subscribed successfully' });
@@ -73,35 +93,30 @@ app.post('/api/subscribe', (req, res) => {
     }
 });
 
-// GET all subscribers
-app.post('/api/subscribers', (req, res) => {
+app.post('/api/subscribers', async (req, res) => {
     try {
         const { auth } = req.body;
         if (auth !== ADMIN_KEY) return res.status(401).json({ error: 'Invalid security key' });
 
-        const subscribers = JSON.parse(fs.readFileSync(DATA_FILE));
+        const subscribers = await Subscriber.find().sort({ date: -1 });
         res.status(200).json(subscribers);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch subscribers' });
     }
 });
 
-// DELETE a subscriber
-app.delete('/api/subscribers/:email', (req, res) => {
+app.delete('/api/subscribers/:email', async (req, res) => {
     try {
         const { auth } = req.body;
         if (auth !== ADMIN_KEY) return res.status(401).json({ error: 'Invalid security key' });
 
         const email = req.params.email;
-        let subscribers = JSON.parse(fs.readFileSync(DATA_FILE));
-        const initialLength = subscribers.length;
-        subscribers = subscribers.filter(s => s.email !== email);
+        const result = await Subscriber.deleteOne({ email });
 
-        if (subscribers.length === initialLength) {
+        if (result.deletedCount === 0) {
             return res.status(404).json({ error: 'Subscriber not found' });
         }
 
-        fs.writeFileSync(DATA_FILE, JSON.stringify(subscribers, null, 2));
         res.status(200).json({ message: 'Subscriber deleted' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete subscriber' });
@@ -121,7 +136,7 @@ app.post('/api/broadcast', async (req, res) => {
             return res.status(500).json({ error: 'Email service not configured on server' });
         }
 
-        const subscribers = JSON.parse(fs.readFileSync(DATA_FILE));
+        const subscribers = await Subscriber.find();
 
         if (subscribers.length === 0) {
             return res.status(400).json({ error: 'No subscribers to broadcast to' });
@@ -166,46 +181,47 @@ app.post('/api/broadcast', async (req, res) => {
     }
 });
 
-// GET all deals
-app.get('/api/deals', (req, res) => {
+app.get('/api/deals', async (req, res) => {
     try {
-        const deals = JSON.parse(fs.readFileSync(DEALS_FILE));
+        const deals = await Deal.find().sort({ dateAdded: -1 });
         res.status(200).json(deals);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch deals' });
     }
 });
 
-// POST new deal
-app.post('/api/deals', (req, res) => {
+app.post('/api/deals', async (req, res) => {
     try {
         const { deal, auth } = req.body;
         if (auth !== ADMIN_KEY) return res.status(401).json({ error: 'Invalid security key' });
 
-        const deals = JSON.parse(fs.readFileSync(DEALS_FILE));
-        const newDeal = {
-            ...deal,
-            id: Date.now().toString(),
-            dateAdded: new Date().toISOString()
-        };
-        deals.push(newDeal);
-        fs.writeFileSync(DEALS_FILE, JSON.stringify(deals, null, 2));
+        const newDeal = new Deal({
+            title: deal.title,
+            sector: deal.sector,
+            location: deal.location,
+            type: deal.type,
+            status: deal.status
+        });
+
+        await newDeal.save();
         res.status(201).json(newDeal);
     } catch (err) {
         res.status(500).json({ error: 'Failed to add deal' });
     }
 });
 
-// DELETE a deal
-app.delete('/api/deals/:id', (req, res) => {
+app.delete('/api/deals/:id', async (req, res) => {
     try {
-        const { auth } = req.body; // In a real app, use headers
+        const { auth } = req.body;
         if (auth !== ADMIN_KEY) return res.status(401).json({ error: 'Invalid security key' });
 
         const id = req.params.id;
-        let deals = JSON.parse(fs.readFileSync(DEALS_FILE));
-        deals = deals.filter(d => d.id !== id);
-        fs.writeFileSync(DEALS_FILE, JSON.stringify(deals, null, 2));
+        const result = await Deal.findByIdAndDelete(id);
+
+        if (!result) {
+            return res.status(404).json({ error: 'Deal not found' });
+        }
+
         res.status(200).json({ message: 'Deal deleted' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete deal' });
