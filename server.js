@@ -53,7 +53,12 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '') : ''
     },
-    connectionTimeout: 10000 // 10s timeout
+    connectionTimeout: 15000, // Increased to 15s
+    greetingTimeout: 10000,
+    socketTimeout: 20000,
+    // CRITICAL: Force IPv4 to avoid ENETUNREACH on Render/Cloud environments
+    dnsTimeout: 5000,
+    family: 4
 });
 
 app.use(cors());
