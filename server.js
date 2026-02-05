@@ -181,8 +181,9 @@ app.post('/api/broadcast', async (req, res) => {
         console.log(`Broadcast finished. Total: ${results.length}, Success: ${successCount}, Failed: ${failCount}`);
 
         if (successCount === 0 && results.length > 0) {
+            const firstError = results.find(r => r.status === 'rejected')?.reason?.message || 'Unknown SMTP Error';
             return res.status(500).json({
-                error: 'All emails failed to send. Check server logs for SMTP errors.',
+                error: `All emails failed to send. Reason: ${firstError}`,
                 failed: failCount
             });
         }
