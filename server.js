@@ -53,8 +53,12 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '') : ''
     },
-    connectionTimeout: 30000, // Increased to 30s for cloud reliability
-    family: 4 // CRITICAL: Force IPv4 to resolve ENETUNREACH/Timeout on Render
+    // Use true for 465, false for other ports. Since we are using 465, secure must be true.
+    connectionTimeout: 30000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
+    // CRITICAL: Aggressively force IPv4 to avoid ENETUNREACH on Render/Cloud
+    family: 4
 });
 
 app.use(cors());
