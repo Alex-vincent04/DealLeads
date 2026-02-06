@@ -492,6 +492,7 @@
                     }
 
                     let html = `
+                        <div class="table-container">
                         <table class="subscriber-table">
                             <thead>
                                 <tr>
@@ -523,7 +524,7 @@
                         `;
                     });
 
-                    html += '</tbody></table>';
+                    html += '</tbody></table></div>';
                     container.innerHTML = html;
                 } else {
                     const data = await res.json();
