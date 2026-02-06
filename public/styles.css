@@ -205,15 +205,21 @@ body {
 
 .filter-bar {
     background: #475569;
-    padding: 15px 30px;
+    padding: 10px 20px;
     border-radius: 12px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    /* Left-align the Sectors dropdown */
     align-items: center;
     color: white;
     box-shadow: var(--shadow-lg);
-    flex-wrap: wrap;
-    gap: 20px;
+    width: 100%;
+    max-width: 550px;
+    /* Match .search-group max-width */
+    margin-left: auto;
+    /* Align to the right side of the container */
+    margin-right: 0;
+    gap: 15px;
 }
 
 .filter-group {

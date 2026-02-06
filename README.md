@@ -36,3 +36,6 @@ In your Render dashboard (Environment tab), set the following:
 3. Add the environment variables above.
 4. Render will automatically install dependencies and start the server.
 
+### 💡 Important: Email Broadcasting (Resend)
+- **Testing**: Using `onboarding@resend.dev` only works for sending emails to yourself.
+- **Production**: To broadcast to all your subscribers, you **must** verify a custom domain in your [Resend Dashboard](https://resend.com/domains) and update the `from:` address in `server.js` (Line 152).

@@ -164,13 +164,11 @@ const mainFilterWrapper = document.getElementById('mainFilterWrapper');
 
 // Panels & Triggers
 const triggers = {
-    sector: document.getElementById('sectorTrigger'),
-    more: document.getElementById('moreFiltersTrigger')
+    sector: document.getElementById('sectorTrigger')
 };
 
 const panels = {
-    sector: document.getElementById('sectorPanel'),
-    more: document.getElementById('moreFiltersPanel')
+    sector: document.getElementById('sectorPanel')
 };
 
 // Toggle Main Filter Section
@@ -205,16 +203,13 @@ Object.keys(triggers).forEach(key => {
     }
 });
 
-// Close logic for each panel
-['Sector', 'MoreFilters'].forEach(name => {
-    const btn = document.getElementById(`close${name}${name === 'MoreFilters' ? '' : 'Panel'}`);
-    if (btn) {
-        btn.addEventListener('click', () => {
-            const lower = name === 'MoreFilters' ? 'more' : name.toLowerCase();
-            if (panels[lower]) panels[lower].classList.remove('active');
-        });
-    }
-});
+// Close logic for sector panel
+const closeSectorBtn = document.getElementById('closeSectorPanel');
+if (closeSectorBtn) {
+    closeSectorBtn.addEventListener('click', () => {
+        if (panels.sector) panels.sector.classList.remove('active');
+    });
+}
 
 // Pill Selection Logic
 document.querySelectorAll('.pill').forEach(pill => {
@@ -326,7 +321,6 @@ function setupActions(panelKey, toastMsg) {
 }
 
 setupActions('sector', 'Sectors filter applied');
-setupActions('more', 'Advanced filters applied');
 
 
 // Dynamic Deal Loading

@@ -68,14 +68,6 @@
             <!-- Toggleable Filter Section -->
             <div class="filter-wrapper collapsible" id="mainFilterWrapper">
                 <div class="filter-bar">
-                    <div class="filter-group">
-                        <span class="filter-label">Filter By:</span>
-                        <label class="filter-checkbox"><input type="checkbox" name="type" value="nip"> NIP</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="type" value="stressed" checked>
-                            Stressed Assets</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="type" value="csr"> CSR</label>
-                    </div>
-
                     <div class="filter-controls">
                         <div class="dropdown-trigger" id="sectorTrigger">
                             <span>Sectors</span>
@@ -85,8 +77,6 @@
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
                         </div>
-
-                        <button class="btn-more-filters" id="moreFiltersTrigger">More Filters</button>
                     </div>
                 </div>
 
@@ -131,128 +121,6 @@
                 </div>
 
 
-
-                <!-- Expanded More Filters Panel -->
-                <div class="expanded-panel more-filters-panel" id="moreFiltersPanel">
-                    <div class="panel-close-top" id="closeMoreFilters">&times;</div>
-                    <div class="more-filters-grid">
-                        <div class="filter-column">
-                            <div class="filter-section">
-                                <label class="section-title">Project Cost</label>
-                                <div class="range-container">
-                                    <input type="range" min="0" max="1000" value="500" class="slider" id="costSlider">
-                                    <div class="range-labels">
-                                        <span>
-                                            < USD 10 Mn</span>
-                                                <span>> USD 500 Mn</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="filter-section">
-                                <label class="section-title">Last Updated Date</label>
-                                <div class="date-input-wrapper">
-                                    <input type="date" class="date-input">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="calendar-icon">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="filter-column">
-                            <div class="filter-section">
-                                <label class="section-title">Requirements</label>
-                                <div class="custom-select">
-                                    <select>
-                                        <option>Select Requirements</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="filter-section">
-                                <label class="section-title">Mode of Implementation</label>
-                                <div class="pill-group">
-                                    <button class="pill">PPP</button>
-                                    <button class="pill">EPC</button>
-                                    <button class="pill">Pure Private</button>
-                                    <button class="pill">To Be Finalized</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="filter-column">
-                            <div class="filter-section">
-                                <label class="section-title">Added on Date</label>
-                                <div class="date-input-wrapper">
-                                    <input type="date" class="date-input">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="calendar-icon">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                                    </svg>
-                                </div>
-                            </div>
-
-                            <div class="filter-section">
-                                <label class="section-title">Ownership</label>
-                                <div class="pill-group">
-                                    <button class="pill">Private</button>
-                                    <button class="pill">Government</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="action-buttons-fixed">
-                            <button class="btn-clear-outline" id="clearMoreFilters">Clear All</button>
-                            <button class="btn-apply-orange" id="applyMoreFilters">Apply</button>
-                        </div>
-                    </div>
-
-                    <div class="more-filters-bottom-row">
-                        <div class="filter-section full-width">
-                            <label class="section-title">Project Stage</label>
-                            <div class="pill-group">
-                                <button class="pill">Under Conceptualization</button>
-                                <button class="pill">Under Development</button>
-                                <button class="pill">Under Implementation</button>
-                                <button class="pill">Completed</button>
-                            </div>
-                        </div>
-
-                        <div class="toggle-group-row">
-                            <div class="toggle-item">
-                                <label class="section-title">SDG</label>
-                                <label class="switch">
-                                    <input type="checkbox">
-                                    <span class="slider-round"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item">
-                                <label class="section-title">Tender Availability</label>
-                                <label class="switch">
-                                    <input type="checkbox">
-                                    <span class="slider-round"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item">
-                                <label class="section-title">Marquee Opportunities</label>
-                                <label class="switch">
-                                    <input type="checkbox">
-                                    <span class="slider-round"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="deals-grid" id="dealsGrid">
@@ -303,6 +171,10 @@
                             <label for="subEmail">Official Email *</label>
                             <input type="email" id="subEmail" name="email" required
                                 placeholder="Enter your official email">
+                        </div>
+                        <div class="form-group">
+                            <label for="subPhone">Phone Number *</label>
+                            <input type="tel" id="subPhone" name="phone" required placeholder="Enter your phone number">
                         </div>
                         <div class="form-group">
                             <label for="subIndustry">Your Company Industry/Sector *</label>

@@ -497,6 +497,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Phone</th>
                                     <th>Industry</th>
                                     <th>Occupation</th>
                                     <th>Date</th>
@@ -511,6 +512,7 @@
                             <tr>
                                 <td><strong>${s.name}</strong></td>
                                 <td>${s.email}</td>
+                                <td>${s.phone || '-'}</td>
                                 <td>${s.industry}</td>
                                 <td>${s.occupation}</td>
                                 <td>${new Date(s.date).toLocaleDateString()}</td>

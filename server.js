@@ -26,6 +26,7 @@ const subscriberSchema = new mongoose.Schema({
     name: { type: String, required: true },
     occupation: String,
     email: { type: String, required: true, unique: true },
+    phone: String,
     industry: String,
     preferences: String,
     date: { type: Date, default: Date.now }
@@ -61,7 +62,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/api/subscribe', async (req, res) => {
     try {
-        const { name, occupation, email, industry, preferences } = req.body;
+        const { name, occupation, email, phone, industry, preferences } = req.body;
 
         if (!email || !name) {
             return res.status(400).json({ error: 'Name and Email are required' });
@@ -77,6 +78,7 @@ app.post('/api/subscribe', async (req, res) => {
             name,
             occupation,
             email,
+            phone,
             industry,
             preferences
         });
@@ -128,10 +130,6 @@ app.post('/api/broadcast', async (req, res) => {
 
         if (auth !== ADMIN_KEY) {
             return res.status(401).json({ error: 'Invalid security key' });
-        }
-
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            return res.status(500).json({ error: 'Email service not configured on server' });
         }
 
         const subscribers = await Subscriber.find();
