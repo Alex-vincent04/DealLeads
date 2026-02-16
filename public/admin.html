@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | DealLeads</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Login Page */
+        #loginPage {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .logo span {
+            color: #ff6b00;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 20px 0 10px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #ff6b00;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #ff6b00;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e55f00;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            border: 1px solid #ff6b00;
+            color: #ff6b00;
+            background: transparent;
+            padding: 10px 20px;
+            width: auto;
+        }
+
+        .btn-outline:hover {
+            background: #ff6b00;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Dashboard */
+        #dashboardPage {
+            display: none;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .nav-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav-btns .btn {
+            width: auto;
+            padding: 10px 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            text-align: left;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .deal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .deal-item {
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .deal-item h4 {
+            margin: 0 0 5px;
+            font-size: 16px;
+        }
+
+        .deal-item p {
+            margin: 0;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .deal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .full-row {
+            grid-column: 1 / -1;
+        }
+
+        .subscriber-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .subscriber-table th,
+        .subscriber-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .subscriber-table th {
+            color: #64748b;
+            text-transform: uppercase;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-verified {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .payment-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 11px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success {
+            background: #22c55e;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: #64748b;
+            padding: 20px;
+        }
+
+        /* Leads Section under Deals */
+        .leads-container {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            padding: 10px 20px 20px;
+            margin-top: -10px;
+            display: none;
+            font-size: 13px;
+            animation: slideDown 0.3s ease-out;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            z-index: 1;
+            position: relative;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .leads-container.show {
+            display: block;
+        }
+
+        .lead-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+
+        .lead-item:hover {
+            border-color: #e2e8f0;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .lead-info {
+            flex-grow: 1;
+            padding-right: 15px;
+        }
+
+        .lead-info strong {
+            display: block;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .lead-meta {
+            color: #64748b;
+            font-size: 11px;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .lead-message {
+            margin-top: 6px;
+            color: #475569;
+            line-height: 1.4;
+            padding-left: 10px;
+            border-left: 2px solid #cbd5e1;
+        }
+
+        .btn-toggle-leads {
+            font-size: 12px;
+            padding: 6px 12px;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #475569;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            /* Prevent "Leads ( 1 )" from wrapping */
+            min-width: fit-content;
+        }
+
+        .btn-toggle-leads:hover {
+            border-color: #ff6b00;
+            color: #ff6b00;
+        }
+
+        .btn-toggle-leads.active {
+            background: #fff7ed;
+            border-color: #ff6b00;
+            color: #ff6b00;
+        }
+
+        .lead-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-lead-reply {
+            padding: 6px 12px;
+            background: #ff6b00;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-lead-reply:hover {
+            background: #e66000;
+            transform: translateY(-1px);
+        }
+
+        .lead-delete {
+            opacity: 0.4;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .lead-item:hover .lead-delete {
+            opacity: 1;
+        }
+
+        .lead-delete:hover {
+            background: #fee2e2;
+        }
+
+        /* Modal Base Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            animation: modalScale 0.3s ease-out;
+        }
+
+        @keyframes modalScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #ff6b00;
+        }
+
+        /* Broadcast Modal Specifics */
+        .broadcast-stats {
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #eff6ff;
+            border-radius: 8px;
+            color: #1e40af;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #dbeafe;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        #broadcastMessage {
+            font-family: inherit;
+            resize: vertical;
+            min-height: 200px;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+    <!-- Login Page -->
+    <div id="loginPage">
+        <div class="login-card">
+            <a href="index.html" class="logo">Deal<span>Leads</span></a>
+            <h2>Admin Login</h2>
+            <p class="subtitle">Sign in with your Firebase credentials</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required placeholder="admin@example.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password"
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+
+            <a href="index.html" class="back-link">← Back to Homepage</a>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage">
+        <div class="container">
+            <header>
+                <a href="index.html" class="logo">Deal<span>Leads</span></a>
+                <div class="nav-btns">
+                    <a href="index.html" class="btn btn-outline">View Site</a>
+                    <button class="btn btn-primary" onclick="openBroadcastModal()">Broadcast</button>
+                    <button class="btn btn-outline" onclick="logout()">Logout</button>
+                </div>
+
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Add Deal Form -->
+                <div class="card">
+                    <h2 id="formTitle">Add New Deal</h2>
+                    <form id="dealForm">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="title" required placeholder="e.g. Solar Power Plant">
+                        </div>
+                        <div class="form-group">
+                            <label>Sector</label>
+                            <input type="text" id="sector" required placeholder="e.g. Manufacturing, Solar">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="location" required placeholder="e.g. Gujarat, India">
+                        </div>
+                        <div class="form-group">
+                            <label>Deal Type</label>
+                            <select id="type">
+                                <option value="Asset Acquisition">Asset Acquisition</option>
+                                <option value="Joint Venture">Joint Venture</option>
+                                <option value="Equity Investment">Equity Investment</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <input type="text" id="status" value="Performing Asset">
+                        </div>
+                        <button type="submit" id="submitBtn" class="btn btn-primary">Create Deal</button>
+                        <button type="button" id="cancelBtn" class="btn btn-outline" onclick="cancelEdit()"
+                            style="display: none; margin-top: 10px;">Cancel</button>
+                    </form>
+                </div>
+
+                <!-- Deal List -->
+                <div class="card">
+                    <h2>Manage Deals</h2>
+                    <div id="dealList" class="deal-list">
+                        <p class="loading">Loading deals...</p>
+                    </div>
+                </div>
+
+                <!-- Payment Management -->
+                <div class="card full-row">
+                    <h2>Payment Management</h2>
+                    <div id="paymentList">
+                        <p class="loading">Loading payments...</p>
+                    </div>
+                </div>
+
+                <!-- Subscriber List -->
+                <div class="card full-row">
+                    <h2>Subscriber List</h2>
+                    <div id="subscriberList">
+                        <p class="loading">Loading subscribers...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Broadcast Email Modal -->
+    <div class="modal" id="broadcastModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-btn" onclick="closeBroadcastModal()">&times;</span>
+            <h2>Broadcast Email</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Send a manual update to all your subscribed users.</p>
+
+            <div id="broadcastStats" class="broadcast-stats">
+                Checking subscriber list...
+            </div>
+
+            <form id="broadcastForm">
+                <div class="form-group">
+                    <label>Email Subject</label>
+                    <input type="text" id="broadcastSubject" required
+                        placeholder="e.g. New Investment Opportunities Available">
+                </div>
+                <div class="form-group">
+                    <label>Message Content</label>
+                    <textarea id="broadcastMessage" required
+                        placeholder="Write your message here. Line breaks will be preserved in the email."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeBroadcastModal()">Cancel</button>
+                    <button type="submit" id="broadcastSubmitBtn" class="btn btn-primary"
+                        style="width: auto; padding: 10px 30px;">Send Broadcast</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqgdGBBqvAy6qXgAmFc9bQ4gDs-vcbySM",
+            authDomain: "deal-leads.firebaseapp.com",
+            projectId: "deal-leads",
+            storageBucket: "deal-leads.firebasestorage.app",
+            messagingSenderId: "904780198964",
+            appId: "1:904780198964:web:9a4195e4a616873424c661"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let editMode = false;
+        let currentEditId = null;
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        // Auth state
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const tokenResult = await user.getIdTokenResult();
+                if (tokenResult.claims.admin) {
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('dashboardPage').style.display = 'block';
+                    loadDeals();
+                    loadSubscribers();
+                    loadPayments();
+                } else {
+                    showToast('Access denied: Admin privileges required', 'error');
+                    auth.signOut();
+                }
+            } else {
+                document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('dashboardPage').style.display = 'none';
+            }
+        });
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                showToast('Login successful!');
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        });
+
+        // Logout
+        function logout() {
+            auth.signOut();
+            showToast('Logged out');
+        }
+
+        // Load deals
+        async function loadDeals() {
+            const dealList = document.getElementById('dealList');
+            try {
+                const snapshot = await db.collection('deals').orderBy('dateAdded', 'desc').get();
+
+                if (snapshot.empty) {
+                    dealList.innerHTML = '<p class="loading">No deals found. Create your first deal!</p>';
+                    return;
+                }
+
+                dealList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const deal = doc.data();
+                    const div = document.createElement('div');
+                    div.className = 'deal-item-wrapper'; // New wrapper
+                    div.innerHTML = `
+                        <div class="deal-item">
+                            <div>
+                                <h4>${deal.title}</h4>
+                                <p>${deal.sector} | ${deal.location}</p>
+                            </div>
+                            <div class="deal-actions">
+                                <button class="btn-toggle-leads" onclick="toggleLeads('${doc.id}')">Leads (<span id="count-${doc.id}">0</span>)</button>
+                                <button class="btn btn-outline" onclick="editDeal('${doc.id}')">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteDeal('${doc.id}')">Delete</button>
+                            </div>
+                        </div>
+                        <div class="leads-container" id="leads-${doc.id}">
+                            <div class="loading">Loading interests...</div>
+                        </div>
+                    `;
+                    dealList.appendChild(div);
+                    loadInquiriesForDeal(doc.id);
+                });
+
+            } catch (error) {
+                dealList.innerHTML = '<p class="loading">Error loading deals</p>';
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Create/Update deal
+        document.getElementById('dealForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const dealData = {
+                title: document.getElementById('title').value,
+                sector: document.getElementById('sector').value,
+                location: document.getElementById('location').value,
+                type: document.getElementById('type').value,
+                status: document.getElementById('status').value,
+                dateAdded: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                if (editMode) {
+                    await db.collection('deals').doc(currentEditId).update(dealData);
+                    showToast('Deal updated!');
+                } else {
+                    await db.collection('deals').add(dealData);
+                    showToast('Deal created!');
+                }
+
+                cancelEdit();
+                loadDeals();
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        });
+
+        // Edit deal
+        async function editDeal(id) {
+            try {
+                const doc = await db.collection('deals').doc(id).get();
+                const deal = doc.data();
+
+                document.getElementById('title').value = deal.title;
+                document.getElementById('sector').value = deal.sector;
+                document.getElementById('location').value = deal.location;
+                document.getElementById('type').value = deal.type || 'Asset Acquisition';
+                document.getElementById('status').value = deal.status || 'Performing Asset';
+
+                editMode = true;
+                currentEditId = id;
+                document.getElementById('formTitle').textContent = 'Edit Deal';
+                document.getElementById('submitBtn').textContent = 'Update Deal';
+                document.getElementById('cancelBtn').style.display = 'block';
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Cancel edit
+        function cancelEdit() {
+            editMode = false;
+            currentEditId = null;
+            document.getElementById('dealForm').reset();
+            document.getElementById('formTitle').textContent = 'Add New Deal';
+            document.getElementById('submitBtn').textContent = 'Create Deal';
+            document.getElementById('cancelBtn').style.display = 'none';
+        }
+
+        // Delete deal
+        async function deleteDeal(id) {
+            if (!confirm('Delete this deal? This will also hide associated leads.')) return;
+
+            try {
+                await db.collection('deals').doc(id).delete();
+                showToast('Deal deleted!');
+                loadDeals();
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+        // --- NEW: INQUIRY (LEADS) MANAGEMENT ---
+
+        function toggleLeads(dealId) {
+            const container = document.getElementById(`leads-${dealId}`);
+            const btn = event.currentTarget;
+            container.classList.toggle('show');
+            btn.classList.toggle('active');
+        }
+
+
+        async function loadInquiriesForDeal(dealId) {
+            const container = document.getElementById(`leads-${dealId}`);
+            const countSpan = document.getElementById(`count-${dealId}`);
+
+            try {
+                console.log('🔍 Checking leads for deal:', dealId);
+                const snapshot = await db.collection('inquiries')
+                    .where('dealId', '==', dealId)
+                    .get();
+
+                console.log(`📊 Found ${snapshot.size} leads for ${dealId}`);
+
+
+
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="loading" style="font-size:11px;">No inquiries for this deal yet.</p>';
+                    return;
+                }
+
+                countSpan.textContent = snapshot.size;
+                container.innerHTML = '';
+
+                snapshot.forEach(doc => {
+                    const inquiry = doc.data();
+                    const date = inquiry.timestamp ? inquiry.timestamp.toDate().toLocaleDateString() : 'N/A';
+
+                    const div = document.createElement('div');
+                    div.className = 'lead-item';
+                    div.innerHTML = `
+                        <div class="lead-info">
+                            <strong>${inquiry.name}</strong>
+                            <span class="lead-meta">${inquiry.email} | ${date}</span>
+                            <div class="lead-message">${inquiry.message || 'No message provided'}</div>
+                        </div>
+                        <div class="lead-actions">
+                            <a href="mailto:${inquiry.email}?subject=Reply to your interest in ${inquiry.dealTitle}" class="btn-lead-reply">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                Reply
+                            </a>
+                            <button class="lead-delete" title="Delete lead" onclick="deleteInquiry('${doc.id}', '${dealId}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+
+                    container.appendChild(div);
+
+                });
+            } catch (error) {
+                console.error('Error loading inquiries:', error);
+                container.innerHTML = '<p class="loading">Error loading leads</p>';
+            }
+        }
+
+        async function deleteInquiry(inquiryId, dealId) {
+            if (!confirm('Delete this lead record?')) return;
+            try {
+                await db.collection('inquiries').doc(inquiryId).delete();
+                showToast('Lead deleted');
+                loadInquiriesForDeal(dealId);
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+
+        // Load subscribers
+        async function loadSubscribers() {
+            const subscriberList = document.getElementById('subscriberList');
+            try {
+                const snapshot = await db.collection('subscribers').orderBy('date', 'desc').get();
+
+                if (snapshot.empty) {
+                    subscriberList.innerHTML = '<p class="loading">No subscribers yet.</p>';
+                    return;
+                }
+
+                let html = '<table class="subscriber-table"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Industry</th><th>Occupation</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+
+                snapshot.forEach(doc => {
+                    const sub = doc.data();
+                    const date = sub.date ? sub.date.toDate().toLocaleDateString() : 'N/A';
+                    html += `
+                        <tr>
+                            <td><strong>${sub.name || 'N/A'}</strong></td>
+                            <td>${sub.email}</td>
+                            <td>${sub.phone || '-'}</td>
+                            <td>${sub.industry || '-'}</td>
+                            <td>${sub.occupation || '-'}</td>
+                            <td>${date}</td>
+                            <td><button class="btn btn-danger" onclick="deleteSubscriber('${doc.id}')">Delete</button></td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+                subscriberList.innerHTML = html;
+            } catch (error) {
+                subscriberList.innerHTML = '<p class="loading">Error loading subscribers</p>';
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Delete subscriber
+        async function deleteSubscriber(email) {
+            if (!confirm('Delete ' + email + '?')) return;
+
+            try {
+                await db.collection('subscribers').doc(email).delete();
+                showToast('Subscriber deleted!');
+                loadSubscribers();
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+        // --- NEW: BROADCAST FUNCTIONALITY ---
+
+        function openBroadcastModal() {
+            document.getElementById('broadcastModal').style.display = 'flex';
+            updateSubscriberCountForBroadcast();
+        }
+
+        function closeBroadcastModal() {
+            document.getElementById('broadcastModal').style.display = 'none';
+            document.getElementById('broadcastForm').reset();
+        }
+
+        async function updateSubscriberCountForBroadcast() {
+            const statsDiv = document.getElementById('broadcastStats');
+            try {
+                const snapshot = await db.collection('subscribers').get();
+                statsDiv.textContent = `Target: ${snapshot.size} subscribed users`;
+            } catch (error) {
+                statsDiv.textContent = 'Error checking subscribers';
+            }
+        }
+
+        document.getElementById('broadcastForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const subject = document.getElementById('broadcastSubject').value;
+            const message = document.getElementById('broadcastMessage').value;
+            const submitBtn = document.getElementById('broadcastSubmitBtn');
+
+            if (!confirm(`Are you sure you want to send this email to all subscribers?`)) return;
+
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
+            try {
+                const snapshot = await db.collection('subscribers').get();
+                if (snapshot.empty) {
+                    throw new Error('No subscribers found.');
+                }
+
+                const batch = db.batch();
+                snapshot.forEach(doc => {
+                    const subscriber = doc.data();
+                    const mailRef = db.collection('mail').doc();
+                    batch.set(mailRef, {
+                        to: subscriber.email,
+                        message: {
+                            subject: subject,
+                            text: message,
+                            html: message.replace(/\n/g, '<br>')
+                        },
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+
+                await batch.commit();
+                alert(`Broadcast triggered successfully! Queued ${snapshot.size} emails.`);
+                closeBroadcastModal();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = 'Send to All';
+                submitBtn.disabled = false;
+            }
+        });
+        // --- PAYMENT MANAGEMENT ---
+        async function loadPayments() {
+            const paymentList = document.getElementById('paymentList');
+            try {
+                const snapshot = await db.collection('payments').orderBy('timestamp', 'desc').get();
+
+                if (snapshot.empty) {
+                    paymentList.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">No payments found.</p>';
+                    return;
+                }
+
+                let html = `
+                    <table class="subscriber-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Plan</th>
+                                <th>Amount</th>
+                                <th>Transaction ID</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                snapshot.forEach(doc => {
+                    const payment = doc.data();
+                    const date = payment.timestamp ? payment.timestamp.toDate().toLocaleDateString() : 'N/A';
+                    const amountStr = payment.total ? payment.total.toLocaleString('en-IN') : (payment.amount || 0);
+
+                    html += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>
+                                <div style="font-weight: 600;">${payment.name}</div>
+                                <div style="font-size: 11px; color: #64748b;">${payment.email}</div>
+                            </td>
+                            <td>${payment.plan}</td>
+                            <td>₹${amountStr}</td>
+                            <td><code style="font-size: 11px;">${payment.transactionId}</code></td>
+                            <td><span class="badge badge-${payment.status}">${payment.status}</span></td>
+                            <td class="payment-actions">
+                                ${payment.status === 'pending' ? `
+                                    <button class="btn btn-primary btn-sm" onclick="verifyPayment('${doc.id}')">Verify</button>
+                                    <button class="btn btn-danger btn-sm" onclick="rejectPayment('${doc.id}')">Reject</button>
+                                ` : '-'}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+                paymentList.innerHTML = html;
+
+            } catch (error) {
+                paymentList.innerHTML = '<p class="loading">Error loading payments</p>';
+                console.error('Error loading payments:', error);
+            }
+        }
+
+        async function verifyPayment(id) {
+            if (!confirm('Mark this payment as verified?')) return;
+            try {
+                const docRef = db.collection('payments').doc(id);
+                const paymentDoc = await docRef.get();
+                const payment = paymentDoc.data();
+
+                await docRef.update({
+                    status: 'verified',
+                    verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Trigger confirmation email via the 'mail' extension
+                await db.collection('mail').add({
+                    to: payment.email,
+                    message: {
+                        subject: 'Payment Verified - Welcome to DealLeads!',
+                        text: `Hi ${payment.name},\n\nYour payment for the ${payment.plan} plan has been verified successfully!\n\nTransaction ID: ${payment.transactionId}\nAmount: ₹${payment.total.toLocaleString('en-IN')}\n\nYou will now start receiving exclusive deal alerts.\n\nThank you for choosing DealLeads!`,
+                        html: `
+                            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+                                <h1 style="color: #2563eb; font-size: 24px;">Payment Verified!</h1>
+                                <p>Hi <strong>${payment.name}</strong>,</p>
+                                <p>Your payment for the <strong>${payment.plan}</strong> plan has been verified successfully!</p>
+                                <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                    <p style="margin: 5px 0;"><strong>Plan:</strong> ${payment.plan}</p>
+                                    <p style="margin: 5px 0;"><strong>Amount Paid:</strong> ₹${payment.total.toLocaleString('en-IN')}</p>
+                                    <p style="margin: 5px 0;"><strong>Transaction ID:</strong> ${payment.transactionId}</p>
+                                </div>
+                                <p>You will now start receiving exclusive deal alerts from us.</p>
+                                <p>Thank you for choosing DealLeads!</p>
+                                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                                <p style="font-size: 12px; color: #64748b; text-align: center;">DealLeads Portal | Investment Opportunities</p>
+                            </div>
+                        `
+                    }
+                });
+
+                showToast('Payment verified and email sent!');
+                loadPayments();
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function rejectPayment(id) {
+            if (!confirm('Reject this payment?')) return;
+            try {
+                await db.collection('payments').doc(id).update({
+                    status: 'failed'
+                });
+                showToast('Payment rejected');
+                loadPayments();
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+    </script>
+</body>
+
+</html>

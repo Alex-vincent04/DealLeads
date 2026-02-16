@@ -1,0 +1,14 @@
+node_modules/
+.env
+*.log
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+functions/node_modules/
+serviceAccountKey.json
+.firebaserc
+subscribers.json
+deals.json

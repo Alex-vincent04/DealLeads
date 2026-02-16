@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DealLeads | Premium Investment Opportunities Portal</title>
+    <meta name="description"
+        content="Explore exclusively curated investment opportunities on DealLeads. Strategic, distressed, and growth-focused deals for serious investors.">
+    <meta name="keywords"
+        content="investment, deals, private equity, business opportunities, manufacturing deals, real estate investment">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">Deal<span>Leads</span></a>
+            <div class="nav-links">
+                <a href="#deals">Opportunities</a>
+                <a href="services.html">Services</a>
+                <a href="mailto:kuriakosepalex93@gmail.com" class="btn-primary">Connect</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1 class="fade-in">Exclusively Curated <br><span>Investment Opportunities</span></h1>
+            <p class="fade-in delay-1">Discover high-potential deals across diverse industries.</p>
+        </div>
+    </header>
+
+    <main class="main-content" id="deals">
+        <div class="container">
+
+            <div class="section-header">
+                <h2>Featured Deal</h2>
+                <div class="search-group">
+                    <button class="btn-filter-toggle" id="filterToggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="4" y1="21" x2="4" y2="14"></line>
+                            <line x1="4" y1="10" x2="4" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12" y2="3"></line>
+                            <line x1="20" y1="21" x2="20" y2="16"></line>
+                            <line x1="20" y1="12" x2="20" y2="3"></line>
+                            <line x1="1" y1="14" x2="7" y2="14"></line>
+                            <line x1="9" y1="8" x2="15" y2="8"></line>
+                            <line x1="17" y1="16" x2="23" y2="16"></line>
+                        </svg> Filter
+                    </button>
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search opportunities..." id="searchInput">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toggleable Filter Section -->
+            <div class="filter-wrapper collapsible" id="mainFilterWrapper">
+                <div class="filter-bar">
+                    <div class="filter-controls">
+                        <div class="dropdown-trigger" id="sectorTrigger">
+                            <span>Sectors</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expanded Sector Panel -->
+                <div class="expanded-panel" id="sectorPanel">
+                    <div class="panel-header">
+                        <h4>All Sectors</h4>
+                        <div class="panel-search">
+                            <input type="text" placeholder="Search by Sector" id="sectorSearch">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <span class="close-panel" id="closeSectorPanel">&times;</span>
+                        </div>
+                    </div>
+
+                    <div class="sector-grid" id="sectorGrid">
+                        <label class="sector-item"><input type="checkbox"> Automotive</label>
+                        <label class="sector-item"><input type="checkbox"> Components</label>
+                        <label class="sector-item"><input type="checkbox"> Manufacturing</label>
+                        <label class="sector-item"><input type="checkbox"> Aviation & Aviation Infrastructure</label>
+                        <label class="sector-item active"><input type="checkbox" checked> BFSI</label>
+                        <label class="sector-item"><input type="checkbox"> Chemicals</label>
+                        <label class="sector-item"><input type="checkbox"> Construction</label>
+                        <label class="sector-item"><input type="checkbox"> Consumer Goods</label>
+                        <label class="sector-item"><input type="checkbox"> CSR</label>
+                        <label class="sector-item"><input type="checkbox"> Education</label>
+                        <label class="sector-item"><input type="checkbox"> Healthcare & Wellness</label>
+                    </div>
+
+                    <div class="panel-footer">
+                        <button class="btn-clear" id="clearSectors">Clear All</button>
+                        <button class="btn-search-apply" id="applySectors">Search</button>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="deals-grid" id="dealsGrid">
+                <!-- Deals will be loaded dynamically via script.js -->
+                <div class="loading-state"
+                    style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--secondary);">
+                    <p>Loading premium opportunities...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Value Added Services Section -->
+    <section class="value-added-section" id="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Value Added Services</h2>
+                <p>Pre-Auction Plan Options</p>
+            </div>
+
+            <div class="services-grid">
+                <!-- Free Plan -->
+                <article class="service-card fade-in">
+                    <div class="service-header">
+                        <h3>Free Plan</h3>
+                        <div class="service-price">
+                            <span class="currency">₹</span>
+                            <span class="amount">0</span>
+                        </div>
+                    </div>
+                    <p class="service-description">Understanding the Buying Process</p>
+                    <ul class="service-features">
+                        <li>Schedule Paper Verification at Nearest Branch</li>
+                        <li>Assist in Completing the Bid Form</li>
+                        <li>Pick EMD (Demand Draft/DD) for Submission</li>
+                        <li>Share Encumbrances Mentioned in Auction Notice</li>
+                    </ul>
+                    <a href="index.html#subscribe" class="btn-payment btn-current">Current</a>
+                </article>
+
+                <!-- Pre-Auction Plan -->
+                <article class="service-card featured fade-in">
+                    <div class="popular-badge">Recommended</div>
+                    <div class="service-header">
+                        <h3>Pre-Auction Plan</h3>
+                        <div class="service-price">
+                            <span class="currency">₹</span>
+                            <span class="amount">10,000</span>
+                        </div>
+                    </div>
+                    <p class="service-description">Everything in Free Plan + below</p>
+                    <ul class="service-features">
+                        <li>Auction Notice</li>
+                        <li>Visit Assistance</li>
+                        <li>Encumbrance Certificate</li>
+                        <li>Seller Bank's Rights</li>
+                        <li>Borrower Litigation(s) Filed in Respective DRT</li>
+                        <li>Electricity Dues</li>
+                        <li>Water Dues</li>
+                        <li>Property Tax</li>
+                        <li>Estimate of City Authority/Association Tax</li>
+                        <li>Obtain Bid Form</li>
+                    </ul>
+                    <a href="payments.html?plan=preauction" class="btn-payment">Payment Option</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="subscribe-section" id="subscribe">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="subscribe-grid">
+                <div class="subscribe-content fade-in">
+                    <h2>Subscribe to DealLeads</h2>
+                    <h3>Access Premium Investment Opportunities ahead of others</h3>
+                    <div class="subscribe-description">
+                        <p>DealLeads delivers curated strategic, distressed, and growth-focused investment
+                            opportunities, backed by deep investment banking and restructuring expertise. We bridge
+                            capital with credible deals, creating lasting value for investors, businesses, and the wider
+                            ecosystem.</p>
+                        <p class="cta-text">Subscribe to our curation-based newsletter and get exclusive deals delivered
+                            to your inbox, without any charges.</p>
+                    </div>
+                </div>
+                <div class="subscribe-form-container scale-in">
+                    <form id="subscriptionForm" class="subscribe-form">
+                        <div class="form-group">
+                            <label for="subName">Full Name *</label>
+                            <input type="text" id="subName" name="name" required placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="subOccupation">Occupation *</label>
+                            <select id="subOccupation" name="occupation" required>
+                                <option value="" disabled selected>Select your occupation</option>
+                                <option value="Investor">Investor</option>
+                                <option value="Broker">Broker</option>
+                                <option value="Business Owner">Business Owner</option>
+                                <option value="Consultant">Consultant</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subEmail">Official Email *</label>
+                            <input type="email" id="subEmail" name="email" required
+                                placeholder="Enter your official email">
+                        </div>
+                        <div class="form-group">
+                            <label for="subPhone">Phone Number *</label>
+                            <input type="tel" id="subPhone" name="phone" required placeholder="Enter your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="subIndustry">Your Company Industry/Sector *</label>
+                            <input type="text" id="subIndustry" name="industry" required
+                                placeholder="e.g. Manufacturing, Tech, Finance">
+                        </div>
+                        <div class="form-group">
+                            <label for="subPreference">Deal Preference (Location, Sector, Size, etc.)</label>
+                            <textarea id="subPreference" name="preferences" rows="3"
+                                placeholder="Tell us what you're looking for"></textarea>
+                        </div>
+                        <input type="hidden" name="_subject" value="New DealLeads Subscription">
+                        <button type="submit" class="btn-subscribe">SUBSCRIBE</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Queries CTA Card -->
+    <section class="queries-section" id="contact">
+        <div class="container">
+            <div class="queries-card">
+                <div class="queries-text">
+                    <h3>For queries, drop us an Email</h3>
+                    <p>Let us know your query in detail and we will get back to you with comprehensive answers at the
+                        earliest. We value your interest and seek to preserve your advantage.</p>
+                </div>
+                <div class="queries-action">
+                    <a href="mailto:kuriakosepalex93@gmail.com" class="btn-express orange">Write to us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Premium Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">Deal<span>Leads</span></a>
+                    <p class="copyright">COPYRIGHT © 2026<br>DealLeads powered by EXCLUSIVE ADVISORY SERVICES<br>
+                        <a href="admin.html"
+                            style="color: #64748b; text-decoration: none; font-size: 10px; opacity: 0.6; margin-top: 5px; display: inline-block;">Admin
+                            Login</a>
+                    </p>
+                </div>
+
+                <div class="footer-contact">
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span>B-1602, BKC Hub, Bandra Kurla Complex, Mumbai, Maharashtra - 400051</span>
+                    </div>
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                            </path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <span>kuriakosepalex93@gmail.com</span>
+                    </div>
+                </div>
+
+                <div class="footer-subscribe">
+                    <h4>Be the first to be notified!</h4>
+                    <p>Sign up using the form above and receive timely updates on curated investment opportunities.</p>
+                    <a href="#subscribe" class="btn-footer-sub">Subscribe</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interest Modal -->
+    <div class="modal" id="interestModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeInterestModal()">&times;</span>
+            <h3>Express Your Interest</h3>
+            <p>Fill in the details below and our team will get back to you shortly.</p>
+            <form id="interestForm" action="https://formspree.io/f/xqelrojv" method="POST">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="message">Your Message (Optional)</label>
+                    <textarea id="message" name="message" rows="4"
+                        placeholder="I am interested in this opportunity..."></textarea>
+                </div>
+                <!-- Hidden fields for deal identity -->
+                <input type="hidden" id="modalDealId" name="dealId">
+                <input type="hidden" id="modalDealTitle" name="dealTitle">
+                <input type="hidden" name="_subject" value="New DealLeads Interest Inquiry">
+                <button type="submit" class="btn-primary full-width">Submit Inquiry</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

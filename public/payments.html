@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Options | DealLeads</title>
+    <meta name="description" content="Complete your payment for DealLeads value-added services">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">Deal<span>Leads</span></a>
+            <div class="nav-links">
+                <a href="index.html#deals">Opportunities</a>
+                <a href="services.html">Services</a>
+                <a href="mailto:kuriakosepalex93@gmail.com" class="btn-primary">Connect</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1 class="fade-in">Payment <span>Options</span></h1>
+            <p class="fade-in delay-1">Complete your payment for value-added services</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="payment-container">
+                <div class="payment-card">
+                    <h2>Service Payment</h2>
+                    <p class="payment-subtitle">Select your plan and complete the payment</p>
+
+                    <form id="paymentForm" class="payment-form">
+                        <div class="form-group">
+                            <label for="planSelect">Selected Plan *</label>
+                            <select id="planSelect" name="plan" required>
+                                <option value="">Select a plan</option>
+                                <option value="preauction">Pre-Auction Plan - ₹10,000</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fullName">Full Name *</label>
+                            <input type="text" id="fullName" name="name" required placeholder="Enter your full name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="+91 XXXXX XXXXX">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="propertyDetails">Property/Deal Details (Optional)</label>
+                            <textarea id="propertyDetails" name="details" rows="4"
+                                placeholder="Provide details about the property or deal you're interested in"></textarea>
+                        </div>
+
+                        <div class="payment-summary">
+                            <h3>Payment Summary</h3>
+                            <div class="summary-row">
+                                <span>Plan Amount:</span>
+                                <span id="planAmount" class="amount">₹0</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>GST (18%):</span>
+                                <span id="gstAmount" class="amount">₹0</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total Amount:</span>
+                                <span id="totalAmount" class="amount">₹0</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-methods">
+                            <h3>Payment Method</h3>
+                            <div class="method-options">
+                                <label class="method-option">
+                                    <input type="radio" name="paymentMethod" value="upi" checked>
+                                    <div class="method-card">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="2" y="5" width="20" height="14" rx="2" />
+                                            <line x1="2" y1="10" x2="22" y2="10" />
+                                        </svg>
+                                        <span>UPI / QR Code</span>
+                                    </div>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio" name="paymentMethod" value="card">
+                                    <div class="method-card">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                            <line x1="1" y1="10" x2="23" y2="10" />
+                                        </svg>
+                                        <span>Credit / Debit Card</span>
+                                    </div>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio" name="paymentMethod" value="netbanking">
+                                    <div class="method-card">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                            <polyline points="9 22 9 12 15 12 15 22" />
+                                        </svg>
+                                        <span>Net Banking</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-proceed-payment">Proceed to Payment</button>
+
+                        <p class="payment-note">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                            Your payment information is secure and encrypted
+                        </p>
+                    </form>
+                </div>
+
+                <div class="payment-help">
+                    <h3>Need Help?</h3>
+                    <p>If you have any questions about our services or payment process, feel free to reach out to us.
+                    </p>
+                    <div class="help-contact">
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <span>kuriakosepalex93@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                            </svg>
+                            <span>Available on request</span>
+                        </div>
+                    </div>
+                    <a href="index.html#services" class="btn-back">← Back to Services</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">Deal<span>Leads</span></a>
+                    <p class="copyright">COPYRIGHT © 2026<br>DealLeads powered by EXCLUSIVE ADVISORY SERVICES<br>
+                        <a href="admin.html"
+                            style="color: #64748b; text-decoration: none; font-size: 10px; opacity: 0.6; margin-top: 5px; display: inline-block;">Admin
+                            Login</a>
+                    </p>
+                </div>
+
+                <div class="footer-contact">
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <span>B-1602, BKC Hub, Bandra Kurla Complex, Mumbai, Maharashtra - 400051</span>
+                    </div>
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        <span>kuriakosepalex93@gmail.com</span>
+                    </div>
+                </div>
+
+                <div class="footer-subscribe">
+                    <h4>Be the first to be notified!</h4>
+                    <p>Sign up and receive timely updates on curated investment opportunities.</p>
+                    <a href="index.html#subscribe" class="btn-footer-sub">Subscribe</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Payment page loaded');
+
+            // Auto-select plan from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedPlan = urlParams.get('plan');
+
+            // Plan pricing
+            const planPrices = {
+                'free': 0,
+                'preauction': 10000
+            };
+
+            // Update payment summary
+            function updatePaymentSummary() {
+                console.log('updatePaymentSummary called');
+                const planSelect = document.getElementById('planSelect');
+                const selectedValue = planSelect.value;
+                console.log('Selected plan:', selectedValue);
+
+                if (selectedValue && planPrices[selectedValue]) {
+                    const baseAmount = planPrices[selectedValue];
+                    const gst = Math.round(baseAmount * 0.18);
+                    const total = baseAmount + gst;
+
+                    console.log('Amounts:', { baseAmount, gst, total });
+
+                    document.getElementById('planAmount').textContent = `₹${baseAmount.toLocaleString('en-IN')}`;
+                    document.getElementById('gstAmount').textContent = `₹${gst.toLocaleString('en-IN')}`;
+                    document.getElementById('totalAmount').textContent = `₹${total.toLocaleString('en-IN')}`;
+                } else {
+                    console.log('No plan selected or invalid plan');
+                    document.getElementById('planAmount').textContent = '₹0';
+                    document.getElementById('gstAmount').textContent = '₹0';
+                    document.getElementById('totalAmount').textContent = '₹0';
+                }
+            }
+
+            // Attach change listener
+            const planSelect = document.getElementById('planSelect');
+            console.log('Attaching change listener to:', planSelect);
+
+            // Add multiple event listeners to catch all cases
+            planSelect.addEventListener('change', function () {
+                console.log('Plan changed (change event)!');
+                updatePaymentSummary();
+            });
+
+            planSelect.addEventListener('input', function () {
+                console.log('Plan changed (input event)!');
+                updatePaymentSummary();
+            });
+
+            // Set plan from URL and update summary
+            if (selectedPlan) {
+                console.log('Setting plan from URL:', selectedPlan);
+                planSelect.value = selectedPlan;
+                // Use setTimeout to ensure DOM is fully ready
+                setTimeout(function () {
+                    updatePaymentSummary();
+                }, 100);
+            }
+
+            // Also update on page load in case plan is already selected
+            updatePaymentSummary();
+
+            // Form submission - Show QR Code Modal
+            const paymentForm = document.getElementById('paymentForm');
+            console.log('Form element:', paymentForm);
+
+            paymentForm.addEventListener('submit', function (e) {
+                console.log('Form submitted!');
+                e.preventDefault();
+                e.stopPropagation();
+
+                const plan = document.getElementById('planSelect').value;
+                if (!plan) {
+                    alert('Please select a plan');
+                    return false;
+                }
+
+                const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+                if (!paymentMethod) {
+                    alert('Please select a payment method');
+                    return false;
+                }
+
+                console.log('Payment method:', paymentMethod.value);
+
+                if (paymentMethod.value === 'upi') {
+                    // Show QR Code Modal
+                    console.log('Showing QR modal');
+                    showQRCodeModal();
+                } else {
+                    // For card/netbanking, show coming soon message
+                    alert('Card and Net Banking payments coming soon! Please use UPI/QR Code for now, or contact us directly.');
+                }
+
+                return false;
+            });
+
+            // Payment Confirmation Modal with Transaction ID Collection
+            function showQRCodeModal() {
+                console.log('Creating payment confirmation modal');
+
+                // Get form data
+                const plan = document.getElementById('planSelect').value;
+                const name = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const details = document.getElementById('propertyDetails').value;
+
+                const baseAmount = planPrices[plan];
+                const gst = Math.round(baseAmount * 0.18);
+                const total = baseAmount + gst;
+
+                const modal = document.createElement('div');
+                modal.id = 'qrModal';
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                    animation: fadeIn 0.3s;
+                `;
+
+                modal.innerHTML = `
+                    <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 90%; position: relative;">
+                        <button onclick="closeQRModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #64748b;">&times;</button>
+                        
+                        <h2 style="color: #0f172a; margin-bottom: 10px;">Complete Payment</h2>
+                        <p style="color: #64748b; margin-bottom: 25px;">Pay via UPI and enter transaction details</p>
+                        
+                        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                            <div style="margin-bottom: 15px;">
+                                <strong style="color: #0f172a;">UPI ID:</strong>
+                                <div style="background: white; padding: 12px; border-radius: 8px; margin-top: 5px; font-family: monospace; font-size: 14px;">
+                                    dealleads@paytm
+                                </div>
+                                <p style="font-size: 12px; color: #64748b; margin-top: 5px;">Copy this UPI ID to make payment</p>
+                            </div>
+                            
+                            <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: #64748b;">Amount to Pay:</span>
+                                    <span style="font-weight: 600; color: #0f172a; font-size: 18px;">₹${total.toLocaleString('en-IN')}</span>
+                                </div>
+                                <div style="font-size: 12px; color: #64748b;">
+                                    (₹${baseAmount.toLocaleString('en-IN')} + ₹${gst.toLocaleString('en-IN')} GST)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #fff7ed; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f59e0b;">
+                            <p style="font-size: 13px; color: #92400e; margin: 0;">
+                                <strong>📱 How to pay:</strong><br>
+                                1. Open Google Pay/PhonePe/Paytm<br>
+                                2. Send ₹${total.toLocaleString('en-IN')} to <strong>dealleads@paytm</strong><br>
+                                3. Copy the transaction ID from your app<br>
+                                4. Enter it below and submit
+                            </p>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #0f172a;">
+                                Transaction ID / UPI Reference Number *
+                            </label>
+                            <input type="text" id="transactionId" placeholder="Enter transaction ID (e.g., T2026021612345)" 
+                                style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                            <p style="font-size: 12px; color: #64748b; margin-top: 5px;">
+                                Find this in your payment app's transaction history
+                            </p>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="closeQRModal()" style="flex: 1; padding: 12px; background: #f1f5f9; color: #64748b; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                                Cancel
+                            </button>
+                            <button onclick="submitPayment('${plan}', '${name}', '${email}', '${phone}', '${details}', ${total}, ${baseAmount}, ${gst})" 
+                                style="flex: 1; padding: 12px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                                Submit Payment
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+                console.log('Payment confirmation modal added to page');
+            }
+
+            // Submit Payment to Firestore
+            window.submitPayment = async function (plan, name, email, phone, details, total, baseAmount, gst) {
+                const transactionId = document.getElementById('transactionId').value.trim();
+
+                if (!transactionId) {
+                    alert('Please enter the transaction ID');
+                    return;
+                }
+
+                try {
+                    // Check if Firebase is loaded
+                    if (typeof firebase === 'undefined') {
+                        throw new Error('Firebase not loaded. Please refresh the page.');
+                    }
+
+                    const db = firebase.firestore();
+
+                    // Save payment record
+                    await db.collection('payments').add({
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        plan: plan,
+                        amount: baseAmount,
+                        gst: gst,
+                        total: total,
+                        transactionId: transactionId,
+                        status: 'pending',
+                        propertyDetails: details || '',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // Trigger notification emails
+                    // 1. To User
+                    await db.collection('mail').add({
+                        to: email,
+                        message: {
+                            subject: 'Payment Received - Pending Verification',
+                            text: `Hi ${name},\n\nWe've received your payment of ₹${total.toLocaleString('en-IN')} for the ${plan} plan.\n\nTransaction ID: ${transactionId}\n\nOur team will verify your payment and confirm within 24 hours.\n\nThanks,\nDealLeads Team`
+                        }
+                    });
+
+                    // 2. To Admin
+                    await db.collection('mail').add({
+                        to: 'kuriakosepalex93@gmail.com',
+                        message: {
+                            subject: 'New Payment to Verify - DealLeads',
+                            text: `New payment submitted:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nPlan: ${plan}\nAmount: ₹${total.toLocaleString('en-IN')}\nTransaction ID: ${transactionId}\n\nVerify in Admin Dashboard.`
+                        }
+                    });
+
+                    // Close modal
+                    closeQRModal();
+
+                    // Show success message
+                    alert('✅ Payment submitted successfully!\\n\\nYour payment is pending verification. We will verify and confirm within 24 hours.\\n\\nThank you for choosing DealLeads!');
+
+                    // Reset form
+                    document.getElementById('paymentForm').reset();
+                    updatePaymentSummary();
+
+                } catch (error) {
+                    console.error('Error saving payment:', error);
+                    alert('❌ Error submitting payment: ' + error.message + '\\n\\nPlease try again or contact us at kuriakosepalex93@gmail.com');
+                }
+            };
+
+            window.closeQRModal = function () {
+                const modal = document.getElementById('qrModal');
+                if (modal) {
+                    modal.remove();
+                }
+            }
+
+            // Close modal on ESC key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeQRModal();
+                }
+            });
+
+            // Navbar scroll effect
+            window.addEventListener('scroll', () => {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 50) {
+                    navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                    navbar.style.boxShadow = '0 10px 30px -10px rgba(0,0,0,0.1)';
+                } else {
+                    navbar.style.background = 'rgba(255, 255, 255, 0.8)';
+                    navbar.style.boxShadow = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
